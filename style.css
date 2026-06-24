@@ -1,0 +1,449 @@
+/* Reset et Base - Style Apple / Pro */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --bg-dark: #000000;
+    --glass-bg: rgba(25, 25, 25, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    
+    --color-false: #ff3b30; /* Red Apple */
+    --color-false-bg: rgba(255, 59, 48, 0.15);
+    --color-misleading: #ff9500; /* Orange Apple */
+    --color-misleading-bg: rgba(255, 149, 0, 0.15);
+    --color-true: #34c759; /* Green Apple */
+    --color-true-bg: rgba(52, 199, 89, 0.15);
+
+    --text-main: #ffffff;
+    --text-muted: #ebebf599; /* Secondary label iOS */
+    
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden; 
+    width: 100vw;
+    height: 100vh;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================================
+   Lecteur Vidéo (YouTube & Fallback)
+========================================= */
+.tv-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: #000;
+    overflow: hidden;
+}
+
+#youtube-player {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw; /* ratio 16:9 */
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    border: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+/* Ajustements dynamiques pour garder le ratio 16:9 et couvrir l'écran (mode cover) */
+@media (min-aspect-ratio: 16/9) {
+    #youtube-player {
+        width: 100vw;
+        height: 56.25vw;
+    }
+}
+@media (max-aspect-ratio: 16/9) {
+    #youtube-player {
+        width: 177.78vh;
+        height: 100vh;
+    }
+}
+
+.tv-container.has-video #youtube-player {
+    opacity: 0.8; /* Légèrement estompé pour assurer la lisibilité de l'UI fact-check */
+}
+
+.tv-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0f0f1a 50%, #000000 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.tv-fallback h1 {
+    color: rgba(255,255,255,0.1);
+    font-weight: 300;
+    letter-spacing: 10px;
+    font-size: 4vw;
+}
+
+.tv-container.has-video .tv-fallback {
+    opacity: 0;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+    z-index: 2; /* Placé au-dessus de la vidéo pour améliorer le contraste du texte */
+}
+
+/* =========================================
+   UI Globale
+========================================= */
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* =========================================
+   Popups Centrés (Mode Apple)
+========================================= */
+.popup-container {
+    position: absolute;
+    bottom: 60px; /* Un peu plus haut pour respirer */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+    max-width: 700px; /* Plus compact et centré */
+}
+
+.popup-card {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px; /* Arrondi Apple */
+    padding: 20px 24px;
+    box-shadow: var(--glass-shadow);
+    width: 100%;
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.popup-card.hide {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.speaker-name {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-error { background: var(--color-false-bg); color: var(--color-false); }
+.badge-misleading { background: var(--color-misleading-bg); color: var(--color-misleading); }
+.badge-true { background: var(--color-true-bg); color: var(--color-true); }
+
+.claim-text {
+    font-size: 1.15rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: #fff;
+    line-height: 1.4;
+}
+
+.correction-text {
+    font-size: 1rem;
+    color: #d1d1d6; /* iOS Gray 2 */
+    font-weight: 300;
+    line-height: 1.4;
+}
+.correction-text strong {
+    font-weight: 500;
+    color: #fff;
+}
+
+.source-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =========================================
+   Sidebar (Optionnel)
+========================================= */
+#ui-sidebar {
+    display: flex;
+    justify-content: flex-end;
+}
+.sidebar-container {
+    pointer-events: auto;
+    width: 380px;
+    height: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-left: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    animation: slideLeftFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sidebar-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.sidebar-header h2 { font-weight: 500; font-size: 1.2rem; }
+.sidebar-feed { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+/* =========================================
+   Menu Minimaliste (Discret en haut)
+========================================= */
+.dev-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px; /* Placé à droite pour être discret */
+    width: 300px;
+    background: rgba(30, 30, 30, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    z-index: 100;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+.dev-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+}
+.dev-header h3 { font-size: 0.9rem; font-weight: 500; }
+
+.dev-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.control-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.toggle-switch {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 3px;
+}
+.btn {
+    flex: 1;
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.btn.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+
+input[type="password"], select {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    outline: none;
+    margin-bottom: 8px;
+}
+
+.action-btn {
+    background: #007aff; /* Blue Apple */
+    color: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.status-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+}
+
+.transcript-debug {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+/* Animations */
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(40px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes slideLeftFade {
+    0% { opacity: 0; transform: translateX(50px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* =========================================
+   Barre de Sous-titres (Debug/Live)
+========================================= */
+.live-subtitles-bar {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    pointer-events: none;
+    z-index: 90;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.subtitles-badge {
+    background: var(--color-false);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    animation: subtitle-pulse 1.8s infinite;
+}
+
+#subtitles-text {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.4;
+    word-break: break-word;
+    flex-grow: 1;
+}
+
+@keyframes subtitle-pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Bouton Historique */
+.history-toggle-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.history-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
