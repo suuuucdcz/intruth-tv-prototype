@@ -1,53 +1,47 @@
-# InTruth TV - Real-Time Fact-Checking Prototype 🎙️✅
+# InTruth TV - Extension Chrome de Fact-Checking en Direct
 
-InTruth TV est un prototype de démonstration technique (Proof of Concept) visant à illustrer l'intégration d'un moteur de **fact-checking en temps réel** directement dans l'interface d'un flux vidéo en direct (comme une application TV, Freebox, ou OQEE).
+**InTruth TV** est une extension Chrome (proof of concept) capable de superposer des alertes de fact-checking en temps réel directement sur les flux vidéo en direct (comme `tv.free.fr`, YouTube, ou BFM TV). 
 
-Ce projet démontre qu'il est techniquement possible de transcrire et d'analyser à la volée un débat politique, en vérifiant les affirmations factuelles (chiffres, bilans) sans latence perceptible pour l'utilisateur final.
+Propulsée par l'IA (modèles Groq, Gemini ou Claude) et la *Web Speech API*, l'extension écoute le flux audio de votre ordinateur (via un câble audio virtuel ou les haut-parleurs), transcrit la parole en direct, filtre le bruit médiatique et lance des recherches sur le web pour vérifier les affirmations factuelles.
 
 ## 🚀 Fonctionnalités Clés
 
-*   **Transcription Audio Temps Réel :** Utilisation de l'API `Web Speech` pour capter et transcrire le flux audio par blocs (chunking) avec une précision quasi instantanée.
-*   **Moteur LLM Ultra-Rapide :** Intégration optimisée avec les API de dernière génération (Groq LPU, Gemini 1.5 Flash, Claude 3.5 Sonnet) pour garantir une latence sous la seconde.
-*   **Filtrage Avancé (Prompt Engineering) :** Une mémoire glissante (Context Buffer) permet au LLM de comprendre le contexte de la conversation, d'ignorer les simples opinions, et de traquer spécifiquement les erreurs factuelles ou le cherry-picking.
-*   **Interface TV Premium :** Design "Glassmorphism" non intrusif, superposé au flux vidéo. Deux modes d'affichage :
-    *   **Pop-up central :** Alertes dynamiques pour les affirmations fausses ou trompeuses.
-    *   **Volet d'historique :** Fil continu et permanent de l'ensemble des déclarations vérifiées.
+- **Filtre Anti-Bruit Intraitable :** L'IA ignore automatiquement les banalités, les opinions, et les transitions journalistiques pour ne se concentrer que sur les affirmations lourdes (chiffres, lois, histoire).
+- **Routage JSON Autonome (Outils) :** L'extension utilise un système de réflexion en 2 étapes ("JSON Routing") contournant les bugs de syntaxe natifs des LLMs pour appeler fiablement des outils de recherche (Tavily, Wikipédia).
+- **Indestructibilité SPA & Fullscreen :**
+  - **Plein Écran Dynamique :** L'extension écoute l'API Fullscreen du navigateur et se greffe automatiquement *à l'intérieur* de la vidéo pour s'assurer que les alertes rouges passent toujours au-dessus du flux, même en plein écran.
+  - **Auto-Réparation (MutationObserver) :** Conçue pour survivre aux sites SPA (React/Vue), l'extension patrouille le DOM et se réinjecte instantanément si le site tente de l'effacer lors d'un changement de chaîne.
+- **Z-Index Absolu :** Interface protégée par le z-index maximum mathématique (`2147483647`) pour rester au premier plan.
+- **Panneau Latéral Déplaçable :** Drag & Drop du panneau de configuration IA.
 
-## 🛠️ Architecture Technique
+## 📦 Installation de l'Extension
 
-Le prototype fonctionne entièrement en environnement local (Frontend-only), ce qui garantit la sécurité des données et supprime la latence réseau liée à l'envoi de fichiers audio lourds :
+1. Ouvrez votre navigateur basé sur Chromium (Chrome, Edge, Brave).
+2. Allez sur la page de gestion des extensions : `chrome://extensions` ou `edge://extensions`.
+3. Activez le **Mode Développeur** (en haut à droite).
+4. Cliquez sur **Charger l'extension non empaquetée** (Load unpacked).
+5. Sélectionnez le dossier contenant ce code source (`intruth-tv-prototype`).
+6. L'icône InTruth TV apparaîtra dans votre navigateur.
 
-1.  **Audio Engine (`audio_engine.js`) :** Gère la capture du microphone (ou du flux interne via câble virtuel) et segmente la parole de manière sémantique.
-2.  **App Core (`app.js`) :** Orchestre l'interface utilisateur, met à jour le DOM de manière asynchrone, et gère les événements vidéo.
-3.  **LLM Client (`llm_client.js`) :** Gère les requêtes HTTP asynchrones vers les fournisseurs d'IA, maintient la fenêtre de contexte glissante, et force un formatage strict (JSON) avec le rôle "Oracle/AFP".
+## 🛠️ Architecture
 
-## ⚙️ Installation & Démarrage
+- `manifest.json`: Configuration de l'extension (V3).
+- `content_script.js`: Script d'injection, gestionnaire de l'API Fullscreen et du MutationObserver (SPA).
+- `ui.html` & `style.css`: L'interface utilisateur injectée dans le DOM (Pop-ups, Historique, Paramètres IA).
+- `app.js`: Orchestrateur principal (Gestion du Drag&Drop, de l'UI, et de la file d'attente des transcriptions).
+- `audio_engine.js`: Capture audio via `webkitSpeechRecognition` avec redémarrage automatique en cas de micro-coupures réseau.
+- `llm_client.js`: Cerveau de l'opération. Gère le prompt de fact-checking, le routage des outils (Tavily/Wiki) et la normalisation JSON.
+- `api_tools.js`: Fonctions d'appels aux API de recherche (Tavily, Wikipedia).
 
-Le projet ne nécessite ni base de données, ni serveur backend lourd.
+## 🎙️ Comment l'utiliser
 
-1.  **Cloner le dépôt :**
-    ```bash
-    git clone https://github.com/votre-nom/intruth-tv-prototype.git
-    cd intruth-tv-prototype
-    ```
+1. Allez sur une chaîne d'information en continu (ex: `tv.free.fr`).
+2. Ouvrez le panneau des **Paramètres IA** en haut à gauche.
+3. Renseignez votre clé API Groq (ou Gemini/Claude). Elle sera sauvegardée localement.
+4. Cliquez sur **Démarrer l'écoute**.
+5. L'IA restera silencieuse jusqu'à ce qu'elle entende une "Fake News" (Pop-up Rouge) ou une information Nuancée (Pop-up Orange). Les vérités iront discrètement dans l'historique.
 
-2.  **Lancer un serveur local :**
-    Utilisez n'importe quel serveur HTTP statique (ex: Python).
-    ```bash
-    python -m http.server 8000
-    ```
+## ⚠️ Notes Techniques
 
-3.  **Accéder à l'application :**
-    Ouvrez votre navigateur Chrome à l'adresse : `http://localhost:8000`
-
-4.  **Configuration (Dev Panel) :**
-    *   Cliquez sur l'engrenage ⚙️ en haut à droite.
-    *   Saisissez votre clé API (Groq, Google Gemini ou Anthropic). Aucune clé n'est stockée sur serveur, tout reste dans votre `localStorage`.
-    *   Sélectionnez votre source audio (Direct / Simulation).
-
-## 🔒 Sécurité et Confidentialité
-*   **Aucune donnée persistante :** L'historique et les clés API sont uniquement conservés dans le navigateur client de l'utilisateur.
-*   **Sécurité API :** Les clés API doivent être saisies manuellement dans le panel développeur et ne sont **jamais** incluses dans le code source de ce dépôt.
-
-## 📝 Auteur
-Prototype conçu pour démontrer la faisabilité technique du fact-checking embarqué dans les médias télévisés.
+- **Audio Virtuel :** Pour que l'extension écoute la télévision (et non votre micro physique), il est recommandé d'utiliser un logiciel comme "VB-Cable Virtual Audio Device" pour router le son de Windows vers le micro du navigateur.
+- **Sécurité des clés :** Les clés API sont stockées via `chrome.storage.local` directement sur votre machine. Aucune donnée n'est envoyée à un serveur tiers autre que les API LLM (Groq/Google/Anthropic).

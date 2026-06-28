@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "InTruth TV",
+  "version": "1.0.0",
+  "description": "Fact-checking en temps réel propulsé par l'IA",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.groq.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.tavily.com/*",
+    "https://fr.wikipedia.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "lucide.min.js",
+        "api_tools.js",
+        "claims_data.js",
+        "audio_engine.js",
+        "llm_client.js",
+        "content_script.js",
+        "app.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "style.css",
+        "ui.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
